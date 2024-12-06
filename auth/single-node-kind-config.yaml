@@ -1,0 +1,42 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  apiServerAddress: "0.0.0.0"
+  apiServerPort: 6443
+  podSubnet: "10.240.0.0/16"
+  serviceSubnet: "10.96.0.0/16"
+nodes:
+- role: control-plane
+  extraMounts:
+  - hostPath: /Users/alandiaz/.config/auth0
+    containerPath: "/auth0"
+    readOnly: true  
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  - |
+    kind: KubeletConfiguration
+    containerLogMaxSize: 100Mi
+    containerLogMaxFiles: 10
+  - |
+    kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        # LOGGING LEVEL
+        v: "6"
+        # OIDC Settings
+        oidc-issuer-url: "https://amapiano-idp.us.auth0.com/"
+        oidc-client-id: "jLe7RD4MqaW6fFgRwOXa8B0n3OVFt4Z7"
+        oidc-username-claim: "email"
+        oidc-groups-claim: "groups"
+        oidc-ca-file: "/auth0/auth0-ca.crt"
+      
+      extraVolumes:
+      - name: "auth0-ca"
+        hostPath: "/auth0"
+        mountPath: "/auth0"
+        readOnly: true
