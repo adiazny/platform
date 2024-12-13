@@ -32,7 +32,7 @@ nodes:
         # LOGGING LEVEL
         v: "6"
         # STRUCTURED AUTHENTICATION FLAG
-        authentication-config: /auth/kubeapi-authn-config.yaml
+        authentication-config: /auth/apiserver-structured-authn-config.yaml
       
       extraVolumes:
       - name: "auth0"
