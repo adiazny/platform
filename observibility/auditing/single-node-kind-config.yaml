@@ -1,0 +1,59 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  apiServerAddress: "0.0.0.0"
+  apiServerPort: 6443
+  podSubnet: "10.240.0.0/16"
+  serviceSubnet: "10.96.0.0/16"
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 30772
+    hostPort: 30772
+  extraMounts:
+  - hostPath: ./
+    containerPath: "/auth"
+    readOnly: true
+  - hostPath: ./audit-policy.yaml 
+    containerPath: /etc/kubernetes/audit-policy.yaml
+    readOnly: true
+  - hostPath: ./audit-logs/
+    containerPath: /var/log/kubernetes/
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  - |
+    kind: KubeletConfiguration
+    containerLogMaxSize: 100Mi
+    containerLogMaxFiles: 10
+  - |
+    kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        # LOGGING LEVEL
+        v: "6"
+        # STRUCTURED AUTHENTICATION FLAG
+        authentication-config: /auth/apiserver-structured-authn-config.yaml
+        # AUDITING
+        audit-policy-file: /etc/kubernetes/audit-policy.yaml
+        audit-log-path: /var/log/kubernetes/audit.log
+        audit-log-maxage: "30" # Number of days to retain audit logs
+        audit-log-maxbackup: "3" # Number of audit log files to retain
+        audit-log-maxsize: "100" # Maximum size in MB of audit log files before rotation
+      
+      extraVolumes:
+      - name: "auth"
+        hostPath: "/auth"
+        mountPath: "/auth"
+        readOnly: true
+      - name: audit-policy
+        hostPath: "/etc/kubernetes/audit-policy.yaml"
+        mountPath: "/etc/kubernetes/audit-policy.yaml"
+        readOnly: true
+      - name: audit-log
+        hostPath: "/var/log/kubernetes/"
+        mountPath: "/var/log/kubernetes/"

@@ -1,0 +1,21 @@
+config:
+    inputs: |
+        [INPUT]
+            Name              tail
+            Tag               kube_audit.*
+            Path              /var/log/kubernetes/audit.log
+            Parser            json
+            DB                /var/log/flb_kube_audit.db
+            Refresh_Interval  10
+    outputs: |
+        [OUTPUT]
+            Name opensearch
+            Match *
+            Host my-first-cluster.default.svc
+            HTTP_User logstash
+            HTTP_Passwd logstash
+            tls On
+            tls.verify Off
+            Logstash_Format On
+            Retry_Limit False
+            Suppress_Type_Name On

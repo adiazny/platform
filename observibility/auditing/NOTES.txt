@@ -1,0 +1,25 @@
+install opensearch components:
+
+#LOCAL STORAGE PROVISIONER https://github.com/rancher/local-path-provisioner/blob/master/deploy/local-path-storage.yaml
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.30/deploy/local-path-storage.yaml
+
+#Storage class needs default annotation:
+storageclass.kubernetes.io/is-default-class: "true"
+
+# install metrics-server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# git clone 
+https://github.com/opensearch-project/opensearch-k8s-operator.git
+
+helm repo add opensearch-operator https://opensearch-project.github.io/opensearch-k8s-operator/
+
+kubectl create ns opensearch-operator
+helm install opensearch-operator opensearch-operator/opensearch-operator -n opensearch-operator -f values.yaml
+
+## Fluebtbit
+
+helm repo add fluent https://fluent.github.io/helm-charts
+helm repo update
+
+helm upgrade --install fluent-bit fluent/fluent-bit -n fluentbit -f ./fluentbit.yaml

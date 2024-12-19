@@ -9,7 +9,7 @@ WAIT := 200s
 
 HOST_IP = $$(ifconfig -l | xargs -n1 ipconfig getifaddr)
 
-KIND_NODE_VERSION := kindest/node:v1.31.0
+KIND_NODE_VERSION := kindest/node:v1.31.2
 CALICO_VERSION := v3.28.1
 SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 MULTI_NODE_KIND_CONFIG :=  multi-node-kind-config.yaml
