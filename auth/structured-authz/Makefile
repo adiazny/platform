@@ -16,7 +16,7 @@ single-node-cluster:
 	@kubectl create clusterrolebinding someuser --clusterrole=cluster-admin --user=someuser
 	@kubectl wait --for=jsonpath='{.status.currentNumberScheduled}'='1' --timeout=120s daemonset/opa -n opa
 	@echo "Cluster is ready"
-	#@docker exec dolo01-control-plane /bin/bash -c "sed -i '/--authorization-mode=Node,RBAC/ s/Node,RBAC/Node,Webhook,RBAC/; /--authorization-mode=Node,Webhook,RBAC/ a\    - --authorization-webhook-version=v1\n    - --authorization-webhook-config-file=/etc/kubernetes/api-server/authz-webhook-kubeconfig.yaml' /etc/kubernetes/manifests/kube-apiserver.yaml"
+	@docker exec dolo01-control-plane /bin/bash -c "sed -i '/--authorization-mode=Node,RBAC/ s/Node,RBAC/Node,Webhook,RBAC/; /--authorization-mode=Node,Webhook,RBAC/ a\    - --authorization-webhook-version=v1\n    - --authorization-webhook-config-file=/etc/kubernetes/api-server/authz-webhook-kubeconfig.yaml' /etc/kubernetes/manifests/kube-apiserver.yaml"
 
 create-%:
 	@kind create cluster --name $(NAME) --wait $(WAIT)
