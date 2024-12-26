@@ -1,0 +1,158 @@
+---
+apiVersion: apiserver.config.k8s.io/v1beta1
+kind: AuthenticationConfiguration
+# list of authenticators to authenticate Kubernetes users using JWT compliant tokens.
+# the maximum number of allowed authenticators is 64.
+jwt:
+- issuer:
+    # url must be unique across all authenticators.
+    # url must not conflict with issuer configured in --service-account-issuer.
+    url: https://amapiano-idp.us.auth0.com/ # Same as --oidc-issuer-url.
+    # PEM encoded CA certificates used to validate the connection when fetching
+    # discovery information. If not set, the system verifier will be used.
+    # Same value as the content of the file referenced by the --oidc-ca-file flag.
+    certificateAuthority: |
+      -----BEGIN CERTIFICATE-----
+      MIID2DCCA12gAwIBAgISBM+NTPlHTEEVvhM0ODxFT8qzMAoGCCqGSM49BAMDMDIx
+      CzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQDEwJF
+      NTAeFw0yNDExMjQxMjI3MzdaFw0yNTAyMjIxMjI3MzZaMBcxFTATBgNVBAMTDHVz
+      LmF1dGgwLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABBUqBdtrKWGKT4DF
+      J7Mgr/Z9uuIEmXa+AR3T7ZzlYMyPfchOmfj7c1tcBLCcUtwRwrv2sD+SfUNiFMj8
+      DXuoDHSjggJsMIICaDAOBgNVHQ8BAf8EBAMCB4AwHQYDVR0lBBYwFAYIKwYBBQUH
+      AwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFN6QBzAPmxidN2lP
+      3Kx4n0QTLeaeMB8GA1UdIwQYMBaAFJ8rX888IU+dBLftKyzExnCL0tcNMFUGCCsG
+      AQUFBwEBBEkwRzAhBggrBgEFBQcwAYYVaHR0cDovL2U1Lm8ubGVuY3Iub3JnMCIG
+      CCsGAQUFBzAChhZodHRwOi8vZTUuaS5sZW5jci5vcmcvMHUGA1UdEQRuMGyCGyou
+      ZWRnZS50ZW5hbnRzLnVzLmF1dGgwLmNvbYIXKi5ndWFyZGlhbi51cy5hdXRoMC5j
+      b22CDioudXMuYXV0aDAuY29tghYqLndlYnRhc2sudXMuYXV0aDAuY29tggx1cy5h
+      dXRoMC5jb20wEwYDVR0gBAwwCjAIBgZngQwBAgEwggEEBgorBgEEAdZ5AgQCBIH1
+      BIHyAPAAdgB9WR4S4XgqexxhZ3xe/fjQh1wUoE6VnrkDL9kOjC55uAAAAZNeWdrr
+      AAAEAwBHMEUCIQCWuZBxuvk/rxM2pX6iB/pQCbHEo22s5G6DTthYaw1xYwIgf4VV
+      YnPDwOthZigV0Ng8xdTW6jvqmzO+BiCiu20ZZPkAdgATSt8atZhCCXgMb+9MepGk
+      FrcjSc5YV2rfrtqnwqvgIgAAAZNeWdurAAAEAwBHMEUCIGmYIPlR0e0d8yYJZ4v4
+      NEdSimh3XmzkhqsFxusPaEyRAiEA+LxHhJGo5yO5M+CFHHIpQbCrb5Q+F0SR0+jr
+      MRetd68wCgYIKoZIzj0EAwMDaQAwZgIxAMiPU64C1nE3O/l+ckYBnS9loDRDhXDU
+      HZasoKwUHuEzjhBATVRe9K/unjE81gJ10wIxAI+Lpn6Yiu2Dz6tM52uvTrQ60U7E
+      T+To+gwm1NYAy1FNMbAI4t2GTJhUzwB/QPVPxw==
+      -----END CERTIFICATE-----   
+    # audiences is the set of acceptable audiences the JWT must be issued to.
+    # At least one of the entries must match the "aud" claim in presented JWTs.
+    audiences:
+    - jLe7RD4MqaW6fFgRwOXa8B0n3OVFt4Z7 # Same as --oidc-client-id.
+    # this is required to be set to "MatchAny" when multiple audiences are specified.
+    audienceMatchPolicy: MatchAny
+  # rules applied to validate token claims to authenticate users.
+  claimValidationRules:
+    # Instead of claim and requiredValue, you can use expression to validate the claim.
+    # expression is a CEL expression that evaluates to a boolean.
+    # all the expressions must evaluate to true for validation to succeed.
+  - expression: |
+      has(claims.amapiano_ticket) && claims.amapiano_ticket != "" && 
+      has(claims.amapiano_groups) && claims.amapiano_groups != ""
+    # Message customizes the error message seen in the API server logs when the validation fails.
+    message: the amapiano_ticket and amapiano_groups claim must exist and not be empty
+  - expression: 'has(claims.amapiano_nbf) && claims.amapiano_nbf != "" && claims.exp - claims.amapiano_nbf <= 21600'
+    message: total token lifetime must not exceed 6 hours
+  claimMappings:
+    # username represents an option for the username attribute.
+    # This is the only required attribute.
+    username:
+      # Same as --oidc-username-claim. Mutually exclusive with username.expression.
+      claim: "email"
+      # Same as --oidc-username-prefix. Mutually exclusive with username.expression.
+      # if username.claim is set, username.prefix is required.
+      # Explicitly set it to "" if no prefix is desired.
+      prefix: ""
+    # groups represents an option for the groups attribute.
+    groups:
+      # Same as --oidc-groups-claim. Mutually exclusive with groups.expression.
+      # claim: "https://amapiano.dev/groups"
+      # Same as --oidc-groups-prefix. Mutually exclusive with groups.expression.
+      # if groups.claim is set, groups.prefix is required.
+      # Explicitly set it to "" if no prefix is desired.
+      # prefix: ""
+      expression: claims['amapiano_groups']
+    # uid represents an option for the uid attribute.
+    uid:
+      # Mutually exclusive with uid.expression.
+      claim: 'sub'
+  userValidationRules:
+    # expression is a CEL expression that evaluates to a boolean.
+    # all the expressions must evaluate to true for the user to be valid.
+  - expression: "!user.username.startsWith('system:')"
+    # Message customizes the error message seen in the API server logs when the validation fails.
+    message: 'username cannot used reserved system: prefix'
+  - expression: "user.groups.all(group, !group.startsWith('system:'))"
+    message: 'groups cannot used reserved system: prefix'
+- issuer:
+    # url must be unique across all authenticators.
+    # url must not conflict with issuer configured in --service-account-issuer.
+    url: https://salsa-idp.us.auth0.com/ # Same as --oidc-issuer-url.
+    # PEM encoded CA certificates used to validate the connection when fetching
+    # discovery information. If not set, the system verifier will be used.
+    # Same value as the content of the file referenced by the --oidc-ca-file flag.
+    certificateAuthority: |
+      -----BEGIN CERTIFICATE-----
+      MIID2DCCA12gAwIBAgISBM+NTPlHTEEVvhM0ODxFT8qzMAoGCCqGSM49BAMDMDIx
+      CzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MQswCQYDVQQDEwJF
+      NTAeFw0yNDExMjQxMjI3MzdaFw0yNTAyMjIxMjI3MzZaMBcxFTATBgNVBAMTDHVz
+      LmF1dGgwLmNvbTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABBUqBdtrKWGKT4DF
+      J7Mgr/Z9uuIEmXa+AR3T7ZzlYMyPfchOmfj7c1tcBLCcUtwRwrv2sD+SfUNiFMj8
+      DXuoDHSjggJsMIICaDAOBgNVHQ8BAf8EBAMCB4AwHQYDVR0lBBYwFAYIKwYBBQUH
+      AwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFN6QBzAPmxidN2lP
+      3Kx4n0QTLeaeMB8GA1UdIwQYMBaAFJ8rX888IU+dBLftKyzExnCL0tcNMFUGCCsG
+      AQUFBwEBBEkwRzAhBggrBgEFBQcwAYYVaHR0cDovL2U1Lm8ubGVuY3Iub3JnMCIG
+      CCsGAQUFBzAChhZodHRwOi8vZTUuaS5sZW5jci5vcmcvMHUGA1UdEQRuMGyCGyou
+      ZWRnZS50ZW5hbnRzLnVzLmF1dGgwLmNvbYIXKi5ndWFyZGlhbi51cy5hdXRoMC5j
+      b22CDioudXMuYXV0aDAuY29tghYqLndlYnRhc2sudXMuYXV0aDAuY29tggx1cy5h
+      dXRoMC5jb20wEwYDVR0gBAwwCjAIBgZngQwBAgEwggEEBgorBgEEAdZ5AgQCBIH1
+      BIHyAPAAdgB9WR4S4XgqexxhZ3xe/fjQh1wUoE6VnrkDL9kOjC55uAAAAZNeWdrr
+      AAAEAwBHMEUCIQCWuZBxuvk/rxM2pX6iB/pQCbHEo22s5G6DTthYaw1xYwIgf4VV
+      YnPDwOthZigV0Ng8xdTW6jvqmzO+BiCiu20ZZPkAdgATSt8atZhCCXgMb+9MepGk
+      FrcjSc5YV2rfrtqnwqvgIgAAAZNeWdurAAAEAwBHMEUCIGmYIPlR0e0d8yYJZ4v4
+      NEdSimh3XmzkhqsFxusPaEyRAiEA+LxHhJGo5yO5M+CFHHIpQbCrb5Q+F0SR0+jr
+      MRetd68wCgYIKoZIzj0EAwMDaQAwZgIxAMiPU64C1nE3O/l+ckYBnS9loDRDhXDU
+      HZasoKwUHuEzjhBATVRe9K/unjE81gJ10wIxAI+Lpn6Yiu2Dz6tM52uvTrQ60U7E
+      T+To+gwm1NYAy1FNMbAI4t2GTJhUzwB/QPVPxw==
+      -----END CERTIFICATE-----   
+    # audiences is the set of acceptable audiences the JWT must be issued to.
+    # At least one of the entries must match the "aud" claim in presented JWTs.
+    audiences:
+    - u2vEGqwWnlf2QtXu56dhWOCwydMtY2n5 # Same as --oidc-client-id.
+    # this is required to be set to "MatchAny" when multiple audiences are specified.
+    audienceMatchPolicy: MatchAny
+  # rules applied to validate token claims to authenticate users.
+  # claimValidationRules:
+  # - expression: 'claims.exp - claims.nbf <= 86400'
+  #   message: total token lifetime must not exceed 24 hours
+  claimMappings:
+    # username represents an option for the username attribute.
+    # This is the only required attribute.
+    username:
+      # Same as --oidc-username-claim. Mutually exclusive with username.expression.
+      claim: "email"
+      # Same as --oidc-username-prefix. Mutually exclusive with username.expression.
+      # if username.claim is set, username.prefix is required.
+      # Explicitly set it to "" if no prefix is desired.
+      prefix: ""
+    # groups represents an option for the groups attribute.
+    groups:
+      # Same as --oidc-groups-claim. Mutually exclusive with groups.expression.
+      # claim: "sub"
+      # Same as --oidc-groups-prefix. Mutually exclusive with groups.expression.
+      # if groups.claim is set, groups.prefix is required.
+      # Explicitly set it to "" if no prefix is desired.
+      # prefix: ""
+      expression: claims['https://salsa.dev/groups']
+    # uid represents an option for the uid attribute.
+    uid:
+      # Mutually exclusive with uid.expression.
+      claim: 'sub'
+  userValidationRules:
+    # expression is a CEL expression that evaluates to a boolean.
+    # all the expressions must evaluate to true for the user to be valid.
+  - expression: "!user.username.startsWith('system:')"
+    # Message customizes the error message seen in the API server logs when the validation fails.
+    message: 'username cannot used reserved system: prefix'
+  - expression: "user.groups.all(group, !group.startsWith('system:'))"
+    message: 'groups cannot used reserved system: prefix'

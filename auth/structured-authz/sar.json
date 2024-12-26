@@ -1,0 +1,23 @@
+{
+    "kind": "SubjectAccessReview",
+    "apiVersion": "authorization.k8s.io/v1",
+    "metadata": {
+      "creationTimestamp": null
+    },
+    "spec": {
+      "resourceAttributes": {
+        "namespace": "opa",
+        "verb": "list",
+        "version": "v1",
+        "resource": "pods"
+      },
+      "user": "someuser",
+      "groups": [
+        "system:authenticated",
+        "devops"
+      ]
+    },
+    "status": {
+      "allowed": false
+    }
+  }
