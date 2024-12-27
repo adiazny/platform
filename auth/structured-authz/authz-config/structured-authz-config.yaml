@@ -1,17 +1,16 @@
 ---
-#
-# DO NOT USE THE CONFIG AS IS. THIS IS AN EXAMPLE.
-#
-apiVersion: apiserver.config.k8s.io/v1
+apiVersion: apiserver.config.k8s.io/v1beta1
 kind: AuthorizationConfiguration
 authorizers:
+  - type: Node
+    name: node
   - type: Webhook
     # Name used to describe the authorizer
     # This is explicitly used in monitoring machinery for metrics
     # Note:
     #   - Validation for this field is similar to how K8s labels are validated today.
     # Required, with no default
-    name: webhook
+    name: opa-webhook-1
     webhook:
       # The duration to cache 'authorized' responses from the webhook
       # authorizer.
@@ -58,7 +57,7 @@ authorizers:
         type: KubeConfigFile
         # Path to KubeConfigFile for connection info
         # Required, if connectionInfo.Type is KubeConfigFile
-        kubeConfigFile: /kube-system-authz-webhook.yaml
+        kubeConfigFile: /etc/kubernetes/api-server/webhook-kubeconfig.yaml
         # matchConditions is a list of conditions that must be met for a request to be sent to this
         # webhook. An empty list of matchConditions matches all requests.
         # There are a maximum of 64 match conditions allowed.
@@ -83,11 +82,5 @@ authorizers:
       - expression: request.resourceAttributes.namespace == 'kube-system'
       # don't intercept requests from kube-system service accounts
       - expression: "!('system:serviceaccounts:kube-system' in request.groups)"
-  - type: Node
-    name: node
   - type: RBAC
     name: rbac
-  - type: Webhook
-    name: in-cluster-authorizer
-    webhook:
-      authorizedTTL: 5m

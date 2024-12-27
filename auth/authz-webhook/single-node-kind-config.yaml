@@ -11,13 +11,11 @@ nodes:
   extraPortMappings:
   - containerPort: 30001
     hostPort: 30001
-  - containerPort: 30002
-    hostPort: 30002
   extraMounts:
   - hostPath: ${pwd}/authn-config
     containerPath: "/auth"
     readOnly: true
-  - hostPath: ${pwd}/authz-config
+  - hostPath: ${pwd}/authz-webhook
     containerPath: /etc/kubernetes/api-server
   kubeadmConfigPatches:
   - |
@@ -37,9 +35,11 @@ nodes:
         v: "6"
         # STRUCTURED AUTHENTICATION FLAG
         authentication-config: /auth/apiserver-structured-authn-config.yaml
-        # STRUCTURED AUTHORIZATION FLAGS
-        authorization-config: /etc/kubernetes/api-server/structured-authz-config.yaml
-
+        # AUTHORIZATION FLAGS
+        authorization-mode: Node,RBAC
+        #authorization-webhook-version: v1
+        #authorization-webhook-config-file: /etc/kubernetes/api-server/authz-webhook-kubeconfig.yaml
+      
       extraVolumes:
       - name: "authn"
         hostPath: "/auth"
