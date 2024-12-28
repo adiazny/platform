@@ -9,14 +9,16 @@ SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 
 PWD=$(shell pwd)
 
-single-node-cluster:
+kind:
 	@pwd=${PWD} envsubst < $(SINGLE_NODE_KIND_CONFIG) | kind create cluster --name dolo01 --image $(KIND_NODE_VERSION) --config -
 	@kubectl create namespace opa
 	@kubectl apply -k .
 	@kubectl create clusterrolebinding someuser --clusterrole=cluster-admin --user=someuser
-	@kubectl wait --for=jsonpath='{.status.currentNumberScheduled}'='1' --timeout=120s daemonset/opa -n opa
-	@echo "Cluster is ready"
+	kubectl wait -n opa --for=condition=available --timeout=120s deployment/opa
+	@kubectl create ns production
+	@kubectl -n production run workload --image=nginx -- /bin/echo "Hello from production"
 	@docker exec -it dolo01-control-plane /bin/bash -c "cp /etc/kubernetes/api-server/add-webhook-stanza.yaml /etc/kubernetes/api-server/structured-authz-config.yaml"
+	@echo "Cluster is ready"
 
 create-%:
 	@kind create cluster --name $(NAME) --wait $(WAIT)
@@ -30,4 +32,4 @@ clean:
 list:
 	@kind get clusters
 
-.PHONY: single-node-cluster create-% delete-% clean list
+.PHONY: kind create-% delete-% clean list

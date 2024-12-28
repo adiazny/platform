@@ -4,7 +4,7 @@ import rego.v1
 
 
 deny contains reason if {
-	input.spec.resourceAttributes.namespace == "kube-system"
+	input.spec.resourceAttributes.namespace == "production"
 
 	required_groups := {"system:authenticated", "jit-edit"}
 	provided_groups := {group | some group in input.spec.groups}
