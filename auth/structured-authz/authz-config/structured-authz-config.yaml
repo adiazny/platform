@@ -5,4 +5,4 @@ authorizers:
   - type: Node
     name: node
   - type: RBAC
-s    name: rbac
+    name: rbac
