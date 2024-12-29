@@ -32,7 +32,7 @@ nodes:
     apiServer:
       extraArgs:
         # LOGGING LEVEL
-        v: "6"
+        v: "8"
         # STRUCTURED AUTHENTICATION FLAG
         authentication-config: /auth/apiserver-structured-authn-config.yaml
         # STRUCTURED AUTHORIZATION FLAGS
