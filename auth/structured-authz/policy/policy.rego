@@ -3,8 +3,7 @@ package k8s.authz
 import rego.v1
 
 deny contains reason if {
-	not input.spec.user == "kubernetes-admin"
-	not input.spec.user == "system:kube-scheduler"
+	not input.spec.user in {"kubernetes-admin", "system:kube-scheduler"}
 
 	input.spec.resourceAttributes.namespace == "production"
 
