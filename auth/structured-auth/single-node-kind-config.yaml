@@ -12,6 +12,9 @@ nodes:
   - containerPort: 30001
     hostPort: 30001
   extraMounts:
+  - hostPath: ${pwd}/audit
+    containerPath: "/etc/kubernetes/audit"
+    readOnly: true
   - hostPath: ${pwd}/authn-config
     containerPath: "/auth"
     readOnly: true
@@ -33,12 +36,22 @@ nodes:
       extraArgs:
         # LOGGING LEVEL
         v: "8"
+        # AUDIT LOGGING
+        audit-policy-file: "/etc/kubernetes/audit/audit-policy.yaml"
+        audit-log-path: /var/log/kubernetes/audit.log
+        audit-log-maxage: "30" # Number of days to retain audit logs
+        audit-log-maxbackup: "3" # Number of audit log files to retain
+        audit-log-maxsize: "100" # Maximum size in MB of audit log files before rotation
         # STRUCTURED AUTHENTICATION FLAG
         authentication-config: /auth/apiserver-structured-authn-config.yaml
         # STRUCTURED AUTHORIZATION FLAGS
         authorization-config: /etc/kubernetes/api-server/structured-authz-config.yaml
 
       extraVolumes:
+      - name: "audit"
+        hostPath: "/etc/kubernetes/audit"
+        mountPath: "/etc/kubernetes/audit"
+        readOnly: true
       - name: "authn"
         hostPath: "/auth"
         mountPath: "/auth"
