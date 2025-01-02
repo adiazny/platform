@@ -54,7 +54,7 @@ nodes:
         hostPath: "/etc/kubernetes/audit"
         mountPath: "/etc/kubernetes/audit"
         readOnly: true
-       - name: audit-log
+      - name: audit-log
         hostPath: "/var/log/kubernetes/"
         mountPath: "/var/log/kubernetes/"
       - name: "authn"
