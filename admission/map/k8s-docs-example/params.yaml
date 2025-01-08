@@ -1,0 +1,10 @@
+---
+apiVersion: mutations.example.com
+kind: Sidecar
+metadata: 
+  name: meshproxy-test.example.com
+spec:
+  name: mesh-proxy
+  image: mesh/proxy:v1.0.0
+  args: ["proxy", "sidecar"]
+  restartPolicy: Always

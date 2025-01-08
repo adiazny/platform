@@ -44,5 +44,3 @@ workflow1:
 workflow2:
 	@chmod +x k8s_user_auth_init.sh user-oauth-workflow-2.sh
 	./user-oauth-workflow-2.sh
-
-.PHONY: single-node-cluster create-% delete-% clean list
