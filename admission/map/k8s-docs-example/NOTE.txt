@@ -1,0 +1,1 @@
+The K8s docs or kep examples are poorly written and have many inaccurate configuration or CEL expressions.

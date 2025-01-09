@@ -13,7 +13,7 @@ spec:
   failurePolicy: Fail
   reinvocationPolicy: IfNeeded
   # matchConditions:
-  #   - name: does-not-have-security-context
+  #   - name: containers-do-not-have-security-context-or-run-as-non-root
   #     expression: "!object.spec.containers.exists(c, has(c.securityContext))"
   mutations:
     - patchType: "ApplyConfiguration"
@@ -21,8 +21,7 @@ spec:
         expression: >
           Object{
             spec: Object.spec{
-              containers: object.spec.containers.filter(c, c.name != "test")
-                .map(c, Object.spec.containers{
+              containers: object.spec.containers.map(c, Object.spec.containers{
                   name: c.name,
                   securityContext: Object.spec.containers.securityContext{
                     runAsNonRoot: true
