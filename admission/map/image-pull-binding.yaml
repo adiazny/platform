@@ -2,6 +2,6 @@
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: "pod-security-runasnonroot-binding"
+  name: "image-pull-policy-binding"
 spec:
-  policyName: "pod-security-runasnonroot"
+  policyName: "image-pull-policy"
