@@ -18,10 +18,9 @@ spec:
         expression: >
           Object{
             metadata: Object.metadata{
-              labels:
-                {
-                "nstype" : "user",
-                "nsid" : object.metadata.name.split('-')[0],
-                }
+              labels: Object.metadata.labels{
+                nstype : "user",
+                nsid : object.metadata.name.split('-')[0],
+              }
             }
           }                 

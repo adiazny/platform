@@ -1,0 +1,64 @@
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "pod-security-runasnonroot"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["pods"]
+  failurePolicy: Fail
+  reinvocationPolicy: IfNeeded
+  # matchConditions:
+  #   - name: does-not-have-security-context
+  #     expression: "!object.spec.containers.exists(c, has(c.securityContext))"
+  mutations:
+    - patchType: "ApplyConfiguration"
+      applyConfiguration:
+        expression: >
+          Object{
+            spec: Object.spec{
+              containers: object.spec.containers.filter(c, c.name != "test")
+                .map(c, Object.spec.containers{
+                  name: c.name,
+                  securityContext: Object.spec.containers.securityContext{
+                    runAsNonRoot: true
+                  }
+                })
+            }
+          }
+
+# WORKS
+# Object{
+#   spec: Object.spec{
+#     containers: object.spec.containers.filter(c, c.name != "test")
+#       .map(c, Object.spec.containers{
+#         name: c.name,
+#         imagePullPolicy: "IfNotPresent"
+#       })
+#   }
+# }
+
+#     containers: object.spec.containers.filter(c, !has(c.securityContext.runAsNonRoot))
+
+
+# WORKS
+# Object{
+#   spec: Object.spec{
+#     restartPolicy: "Never"
+#   }
+# }
+
+# Object{
+#   spec: Object.spec{
+#     containers: object.spec.containers.filter(c, !has(c.resources)).map(c, 
+#       {
+#         name: c.name,
+#       }
+#     )
+#   }
+# }
+#
