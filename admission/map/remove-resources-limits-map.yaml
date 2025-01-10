@@ -1,0 +1,29 @@
+# CEL Playground https://playcel.undistro.io/?content=H4sIAAAAAAAAA81US2%2FTQBD%2BK4MPbSzF7kMUId8qlAMopREIKiRfpuuJs2Jf7K5TJ4j%2FzqyT1qJK6BHky%2Bw8vsfsyj8zQSqrsrMzuCMlrCaIFuKK4N1sDguFm9bbzjSvasMtf%2BZABkAD0kTyKKJcE2PcX4dA%2Bl5twNkH8tQAmbX01mgyMWFT75T1xJNNisnLofIg42rHa7W2Bma98xSC5HCOpu2wJZgwf14mJYOaAu68jAQb2%2FlBGo0zK6beN30JNACjJwQupTjIhmBpPYt3XYQGI045hm%2FXN3Pg9IfPtx9TXWPcoywSMpx%2B6szp4GKNqsMj5NiiNCEOTCPBHmi295%2FmhFWKeHM8Y5eMgNopCnthwUmPqVbzFxyJUlgTGZl8KJdS8dYnYgorDBNRMjUDCgo5nJw8z5VKahn%2FViqF6%2FK81OgS5HMyaRrqb5cTkedJSzbNkp%2F3yRk%2FnaIoaoNOfuVWVlvB%2BqI233mmgoVtar74iKm%2Fqg2AQU0Vrz8ZLR5VFC71JdahZ2QejsWRoae21AQgNT%2BRCkwrTV%2BhclzZFZ68VrtzyvzoKMQxAaBJW7%2BpoM7evL6RdTZWeDMpfXl1rsf0bmsH5y8u3x4EuDp%2FBHjRUP%2FfOnpR%2BnZ7VPv2X4s%2FcB38lLVtiF9x%2Bg3%2B%2Bg0lzCBDDgUAAA%3D%3D
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: "remove-resources-limits"
+spec:
+  matchConstraints:
+    resourceRules:
+    - apiGroups:   [""]
+      apiVersions: ["v1"]
+      operations:  ["CREATE"]
+      resources:   ["pods"]
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  variables:
+    - name: containerIndices
+      expression: >
+        object.spec.containers.filter(c, has(c.resources)).map(c, object.spec.containers.indexOf(c))
+  mutations:
+    - patchType: "JSONPatch"
+      jsonPatch:
+        expression: >
+          variables.containerIndices.map(i,
+            JSONPatch{
+              op: "remove",
+              path: "/spec/containers/"+string(i)+"/resources/limits/cpu"
+            }
+          )          

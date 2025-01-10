@@ -13,8 +13,10 @@ spec:
   failurePolicy: Fail
   reinvocationPolicy: IfNeeded
   matchConditions:
-    - name: platform-pods-only
-      expression: "has(object.metadata.labels.platform)"
+   - name: has-labels
+     expression: "has(object.metadata.labels)"
+   - name: platform-pods-only
+     expression: "has(object.metadata.labels.platform)"
   mutations:
     - patchType: "ApplyConfiguration"
       applyConfiguration:
@@ -23,7 +25,7 @@ spec:
             spec: Object.spec{
               containers: object.spec.containers.map(c, Object.spec.containers{
                   name: c.name,
-                  imagePullPolicy: "IfNotPresent"
+                  imagePullPolicy: "Always"
                 })
             }
           }

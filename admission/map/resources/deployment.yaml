@@ -13,9 +13,9 @@ spec:
   template:
     metadata:
       labels:
+        platform: "true"
         app: d1
     spec:
       containers:
-      - image: nginx
+      - image: nginx:alpine
         name: nginx
-

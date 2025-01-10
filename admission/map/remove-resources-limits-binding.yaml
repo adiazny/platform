@@ -1,0 +1,7 @@
+---
+apiVersion: admissionregistration.k8s.io/v1alpha1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: "remove-resources-limits-binding"
+spec:
+  policyName: "remove-resources-limits"
