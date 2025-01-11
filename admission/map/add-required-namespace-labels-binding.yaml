@@ -2,6 +2,6 @@
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: "namespace-labels-binding"
+  name: "add-required-namespace-labels-binding"
 spec:
-  policyName: "namespace-labels"
+  policyName: "add-required-namespace-labels"

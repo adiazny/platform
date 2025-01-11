@@ -29,36 +29,3 @@ spec:
                 })
             }
           }
-
-# WORKS
-# Object{
-#   spec: Object.spec{
-#     containers: object.spec.containers.map(c, Object.spec.containers{
-#         name: c.name,
-#         securityContext: Object.spec.containers.securityContext{
-#           runAsNonRoot: true
-#         }
-#       })
-#   }
-# }
-
-#     containers: object.spec.containers.filter(c, !has(c.securityContext.runAsNonRoot))
-
-
-# WORKS
-# Object{
-#   spec: Object.spec{
-#     restartPolicy: "Never"
-#   }
-# }
-
-# Object{
-#   spec: Object.spec{
-#     containers: object.spec.containers.filter(c, !has(c.resources)).map(c, 
-#       {
-#         name: c.name,
-#       }
-#     )
-#   }
-# }
-#
