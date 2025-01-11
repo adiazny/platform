@@ -16,7 +16,7 @@ spec:
   variables:
     - name: containerIndices
       expression: >
-        object.spec.containers.filter(c, has(c.resources)).map(c, object.spec.containers.indexOf(c))
+        object.spec.containers.filter(c, has(c.resources) && has(c.resources.limits) && has(c.resources.limits.cpu)).map(c, object.spec.containers.indexOf(c))
   mutations:
     - patchType: "JSONPatch"
       jsonPatch:
