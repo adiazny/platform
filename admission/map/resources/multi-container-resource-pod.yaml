@@ -13,7 +13,7 @@ spec:
         cpu: "250m"
       limits:
         memory: "128Mi"
-        cpu: "500m" # this field will get removed by the mutatingadmissionpolicy
+        cpu: "500m"
   - name: c2
     image: alpine
     command: ["sh", "-c", "sleep infinity"]

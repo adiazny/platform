@@ -20,7 +20,7 @@ spec:
             metadata: Object.metadata{
               labels: Object.metadata.labels{
                 type : "user-workload",
-                applicationid : object.metadata.name.split('-')[0],
+                systemid : object.metadata.name.split('-')[0],
               }
             }
           }                 

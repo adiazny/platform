@@ -1,4 +1,4 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: 12345-service-b-prod
+  name: 12345-myservice-prod
