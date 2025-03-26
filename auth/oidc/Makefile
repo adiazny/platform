@@ -7,7 +7,7 @@ WAIT := 200s
 KIND_NODE_VERSION := kindest/node:v1.31.2
 SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 
-single-node-cluster:
+kind:
 	@kind create cluster --name dolo01 --image $(KIND_NODE_VERSION) --config $(SINGLE_NODE_KIND_CONFIG)
 
 create-%:
@@ -22,4 +22,4 @@ clean:
 list:
 	@kind get clusters
 
-.PHONY: single-node-cluster create-% delete-% clean list
+.PHONY: kind create-% delete-% clean list

@@ -9,7 +9,7 @@ SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 
 PWD=$(shell pwd)
 
-single-node-cluster:
+kind:
 	@pwd=${PWD} envsubst < $(SINGLE_NODE_KIND_CONFIG) | kind create cluster --name dolo01 --image $(KIND_NODE_VERSION) --config -
 	@kubectl create namespace opa
 	@kubectl apply -k .
@@ -30,4 +30,4 @@ clean:
 list:
 	@kind get clusters
 
-.PHONY: single-node-cluster create-% delete-% clean list
+.PHONY: kind create-% delete-% clean list
