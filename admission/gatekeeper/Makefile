@@ -16,7 +16,7 @@ kind:
 
 .PHONY: create-%
 create-%:
-	@kind create cluster --name $(NAME) --wait $(WAIT)
+	@kind create cluster --name $(NAME) --image $(KIND_NODE_VERSION) --wait $(WAIT)
 
 .PHONY: delete-%
 delete-%:
@@ -29,7 +29,3 @@ clean:
 .PHONY: list
 list:
 	@kind get clusters
-
-.PHONY: echo
-echo:
-	@echo Hello
