@@ -1,10 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-GATEKEEPER_VERSION="3-18-3"
+DEFAULT_GATEKEEPER_VERSION="3-18-3"
 
 if [[ "${1:-}" == "cleanup" ]]; then
-  echo "Cleaning up Gatekeeper and cert-manager resources..."
+  GATEKEEPER_VERSION="${2:-$DEFAULT_GATEKEEPER_VERSION}"
+  echo "Cleaning up Gatekeeper and cert-manager resources for version $GATEKEEPER_VERSION..."
 
   echo "Deleting Validating Gatekeeper..."
   kubectl delete -f deployment/validating-gatekeeper-${GATEKEEPER_VERSION}.yaml --ignore-not-found
@@ -24,6 +25,8 @@ if [[ "${1:-}" == "cleanup" ]]; then
   echo "Cleanup complete!"
   exit 0
 fi
+
+GATEKEEPER_VERSION="${1:-$DEFAULT_GATEKEEPER_VERSION}"
 
 cat <<EOF | kubectl apply -f -
 apiVersion: v1

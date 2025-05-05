@@ -33,11 +33,11 @@ list:
 
 .PHONY: deploy-gk-3-15-1
 deploy-gk-3-15-1:
-	@GATEKEEPER_VERSION=3-15-1 ./deployment/deploy.sh
+	@./deployment/deploy.sh 3-15-1
 
 .PHONY: deploy-gk-3-18-3
 deploy-gk-3-18-3:
-	@GATEKEEPER_VERSION=3-18-3 ./deployment/deploy.sh
+	@./deployment/deploy.sh 3-18-3
 
 .PHONY: apply-mutation-policy
 apply-mutation-policy:
