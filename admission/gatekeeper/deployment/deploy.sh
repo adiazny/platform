@@ -32,7 +32,7 @@ kubectl apply -f deployment/cert-manager-resources.yaml
 echo "Waiting for Certificate to be ready..."
 kubectl wait --for=condition=ready certificate gatekeeper-mutating-webhook-cert -n gatekeeper-system --timeout=60s
 
-echo "Deploying Gatekeeper..."
+echo "Deploying Mutating Gatekeeper..."
 kubectl apply -f deployment/mutating-gatekeeper-${GATEKEEPER_VERSION}.yaml
 
 echo "Waiting for Gatekeeper to be ready..."
@@ -48,8 +48,11 @@ kubectl get secret -n gatekeeper-system gatekeeper-mutating-webhook-server-cert
 echo "Checking MutatingWebhookConfiguration:"
 kubectl get mutatingwebhookconfigurations gatekeeper-mutating-webhook-configuration
 
-echo "Deploying Gatekeeper..."
+echo "Deploying Validating Gatekeeper..."
 kubectl apply -f deployment/validating-gatekeeper-${GATEKEEPER_VERSION}.yaml
 
-echo "Waiting for Gatekeeper to be ready..."
+echo "Waiting for Validating Gatekeeper to be ready..."
 kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=webhook -n gatekeeper-system --timeout=120s
+
+echo "Checking ValidatingWebhookConfiguration:"
+kubectl get validatingwebhookconfigurations gatekeeper-webhook-configuration
