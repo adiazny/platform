@@ -8,6 +8,8 @@ KIND_NODE_VERSION := 1.32.3
 KIND_IMAGE := kindest/node:v${KIND_NODE_VERSION}
 SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 
+GATEKEEPER_VERSION := 3-18-3
+
 PWD=$(shell pwd)
 
 .PHONY: kind
@@ -78,3 +80,8 @@ apply-example-resources:
 	@$(MAKE) apply-pod
 	@$(MAKE) apply-allowed-service
 	@$(MAKE) apply-disallowed-service
+
+.PHONY: cleanup
+cleanup:
+	@echo "Cleaning up Gatekeeper resources..."
+	@./deployment/deploy.sh cleanup $(GATEKEEPER_VERSION)
