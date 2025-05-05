@@ -33,32 +33,42 @@ list:
 
 .PHONY: deploy-gk-3-15-1
 deploy-gk-3-15-1:
+	@echo "Deploying Gatekeeper 3.15.1..."
 	@./deployment/deploy.sh 3-15-1
 
 .PHONY: deploy-gk-3-18-3
 deploy-gk-3-18-3:
+	@echo "Deploying Gatekeeper 3.18.3..."
 	@./deployment/deploy.sh 3-18-3
 
 .PHONY: apply-mutation-policy
 apply-mutation-policy:
+	@echo "Applying mutation policies..."
 	@$(APPLY) $(PWD)/policy/mutation/assign-allow-privilege-escalation.yaml
 
 .PHONY: apply-validation-policy
 apply-validation-policy:
+	@echo "Applying validation policies..."
 	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint-template.yaml
 	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint.yaml
 
 .PHONY: apply-policy
-apply-policy: apply-mutation-policy apply-validation-policy
+apply-policy:
+	@echo "Applying all Gatekeeper mutation and validation policies..."
+	@$(MAKE) apply-mutation-policy
+	@$(MAKE) apply-validation-policy
 
 .PHONY: apply-pod
 apply-pod:
+	@echo "Applying a example pod to be mutated..."
 	@$(APPLY) $(PWD)/policy/mutation/example/pod.yaml
 
 .PHONY: apply-disallowed-service
 apply-disallowed-service:
+	@echo "Applying a blocked Service creation..."
 	@$(APPLY) $(PWD)/policy/validation/examples/disallow.yaml
 
 .PHONY: apply-allowed-service
 apply-allowed-service:
+	@echo "Applying an allowed Service creation..."
 	@$(APPLY) $(PWD)/policy/validation/examples/allow.yaml

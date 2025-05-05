@@ -44,12 +44,17 @@ metadata:
   name: gatekeeper-system
 EOF
 
+echo "Installing Gatekeeper version: $GATEKEEPER_VERSION"
 
-echo "Installing cert-manager..."
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+
+CERT_MANAGER_VERSION="1.17.2"
+echo "Installing cert-manager version: $CERT_MANAGER_VERSION"
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v$CERT_MANAGER_VERSION/cert-manager.yaml
 
 echo "Waiting for cert-manager to be ready..."
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=120s
+
+sleep 5
 
 echo "Applying cert-manager resources..."
 kubectl apply -f deployment/cert-manager-resources.yaml
