@@ -38,3 +38,11 @@ deploy-gk-3-15-1:
 .PHONY: deploy-gk-3-18-3
 deploy-gk-3-18-3:
 	@GATEKEEPER_VERSION=3-18-3 ./deployment/deploy.sh
+
+.PHONY: apply-mutation-policy
+apply-mutation-policy:
+	@$(APPLY) $(PWD)/policy/mutation/assign-allow-privilege-escalation.yaml
+
+.PHONY: apply-validation-policy
+apply-validation-policy:
+	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint.yaml
