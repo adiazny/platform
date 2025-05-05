@@ -3,6 +3,28 @@ set -euo pipefail
 
 GATEKEEPER_VERSION="3-18-3"
 
+if [[ "${1:-}" == "cleanup" ]]; then
+  echo "Cleaning up Gatekeeper and cert-manager resources..."
+
+  echo "Deleting Validating Gatekeeper..."
+  kubectl delete -f deployment/validating-gatekeeper-${GATEKEEPER_VERSION}.yaml --ignore-not-found
+
+  echo "Deleting Mutating Gatekeeper..."
+  kubectl delete -f deployment/mutating-gatekeeper-${GATEKEEPER_VERSION}.yaml --ignore-not-found
+
+  echo "Deleting cert-manager resources..."
+  kubectl delete -f deployment/cert-manager-resources.yaml --ignore-not-found
+
+  echo "Deleting cert-manager..."
+  kubectl delete -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml --ignore-not-found
+
+  echo "Deleting namespace gatekeeper-system..."
+  kubectl delete namespace gatekeeper-system --ignore-not-found
+
+  echo "Cleanup complete!"
+  exit 0
+fi
+
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Namespace
