@@ -45,6 +45,7 @@ apply-mutation-policy:
 
 .PHONY: apply-validation-policy
 apply-validation-policy:
+	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint-template.yaml
 	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint.yaml
 
 .PHONY: apply-policy
