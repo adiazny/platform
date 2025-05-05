@@ -57,8 +57,8 @@ apply-validation-policy:
 .PHONY: apply-policy
 apply-policy:
 	@echo "Applying all Gatekeeper mutation and validation policies..."
-	@$(MAKE) apply-mutation-policy
-	@$(MAKE) apply-validation-policy
+	@$(MAKE) --no-print-directory apply-mutation-policy
+	@$(MAKE) --no-print-directory apply-validation-policy
 
 .PHONY: apply-pod
 apply-pod:
@@ -77,9 +77,9 @@ apply-disallowed-service:
 	@$(APPLY) policy/validation/examples/disallow.yaml || true
 
 apply-example-resources:
-	@$(MAKE) apply-pod
-	@$(MAKE) apply-allowed-service
-	@$(MAKE) apply-disallowed-service
+	@$(MAKE) --no-print-directory apply-pod
+	@$(MAKE) --no-print-directory apply-allowed-service
+	@$(MAKE) --no-print-directory apply-disallowed-service
 
 .PHONY: cleanup
 cleanup:

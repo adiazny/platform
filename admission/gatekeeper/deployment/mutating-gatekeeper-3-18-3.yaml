@@ -5182,10 +5182,9 @@ spec:
         - --port=8443
         - --logtostderr
         - --exempt-namespace=gatekeeper-system
-        - --operation=webhook
-        - --operation=mutation-webhook
+        - --operation=mutation-webhook # Only mutation-webhook is enabled, which will cause the pod to fail to start
         - --disable-opa-builtin={http.send}
-        - --disable-cert-rotation # CUSTOM
+        - --disable-cert-rotation # disable cert rotation, using cert-manager for this instance
         command:
         - /manager
         env:
