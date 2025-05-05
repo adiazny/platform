@@ -63,7 +63,7 @@ kubectl wait --for=condition=ready certificate gatekeeper-mutating-webhook-cert 
 echo "Deploying Mutating Gatekeeper..."
 kubectl apply -f deployment/mutating-gatekeeper-${GATEKEEPER_VERSION}.yaml
 
-echo "Waiting 60 seconds for Gatekeeper to be ready..."
+echo "Waiting 60 seconds for Mutating Gatekeeper Webhook to be ready..."
 kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=mutating-webhook -n gatekeeper-system --timeout=60s
 
 echo "Deployment complete! Verifying setup..."
@@ -79,7 +79,7 @@ kubectl get mutatingwebhookconfigurations gatekeeper-mutating-webhook-configurat
 echo "Deploying Validating Gatekeeper..."
 kubectl apply -f deployment/validating-gatekeeper-${GATEKEEPER_VERSION}.yaml
 
-echo "Waiting 60 seconds for Validating Gatekeeper to be ready..."
+echo "Waiting 60 seconds for Validating Gatekeeper Webhook to be ready..."
 kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=webhook -n gatekeeper-system --timeout=60s
 
 echo "Checking ValidatingWebhookConfiguration:"
