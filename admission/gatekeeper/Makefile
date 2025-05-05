@@ -63,12 +63,18 @@ apply-pod:
 	@echo "Applying a example pod to be mutated..."
 	@$(APPLY) $(PWD)/policy/mutation/example/pod.yaml
 
-.PHONY: apply-disallowed-service
-apply-disallowed-service:
-	@echo "Applying a blocked Service creation..."
-	@$(APPLY) $(PWD)/policy/validation/examples/disallow.yaml
-
 .PHONY: apply-allowed-service
 apply-allowed-service:
 	@echo "Applying an allowed Service creation..."
 	@$(APPLY) $(PWD)/policy/validation/examples/allow.yaml
+
+.PHONY: apply-disallowed-service
+apply-disallowed-service:
+	@echo "Applying a blocked Service creation..."
+	@echo "This apply is expected to fail"
+	@$(APPLY) $(PWD)/policy/validation/examples/disallow.yaml || true
+
+apply-example-resources:
+	@$(MAKE) apply-pod
+	@$(MAKE) apply-allowed-service
+	@$(MAKE) apply-disallowed-service
