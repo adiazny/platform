@@ -30,3 +30,11 @@ clean:
 .PHONY: list
 list:
 	@kind get clusters
+
+.PHONY: deploy-gk-3-15-1
+deploy-gk-3-15-1:
+	@GATEKEEPER_VERSION=3-15-1 ./deployment/deploy.sh
+
+.PHONY: deploy-gk-3-18-3
+deploy-gk-3-18-3:
+	@GATEKEEPER_VERSION=3-18-3 ./deployment/deploy.sh
