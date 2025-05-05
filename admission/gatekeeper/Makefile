@@ -46,3 +46,18 @@ apply-mutation-policy:
 .PHONY: apply-validation-policy
 apply-validation-policy:
 	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint.yaml
+
+.PHONY: apply-policy
+apply-policy: apply-mutation-policy apply-validation-policy
+
+.PHONY: apply-pod
+apply-pod:
+	@$(APPLY) $(PWD)/policy/mutation/example/pod.yaml
+
+.PHONY: apply-disallowed-service
+apply-disallowed-service:
+	@$(APPLY) $(PWD)/policy/validation/examples/disallow.yaml
+
+.PHONY: apply-allowed-service
+apply-allowed-service:
+	@$(APPLY) $(PWD)/policy/validation/examples/allow.yaml

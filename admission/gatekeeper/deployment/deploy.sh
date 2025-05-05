@@ -55,4 +55,4 @@ echo "Waiting for Validating Gatekeeper to be ready..."
 kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=webhook -n gatekeeper-system --timeout=120s
 
 echo "Checking ValidatingWebhookConfiguration:"
-kubectl get validatingwebhookconfigurations gatekeeper-webhook-configuration
+kubectl get validatingwebhookconfigurations gatekeeper-validating-webhook-configuration
