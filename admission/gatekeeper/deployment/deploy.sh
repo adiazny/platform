@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+GATEKEEPER_VERSION="3-18-3"
+
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Namespace
@@ -19,7 +21,7 @@ EOF
 
 
 echo "Installing cert-manager..."
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
 
 echo "Waiting for cert-manager to be ready..."
 kubectl wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager -n cert-manager --timeout=120s
@@ -31,7 +33,7 @@ echo "Waiting for Certificate to be ready..."
 kubectl wait --for=condition=ready certificate gatekeeper-mutating-webhook-cert -n gatekeeper-system --timeout=60s
 
 echo "Deploying Gatekeeper..."
-kubectl apply -f deployment/mutating-gatekeeper-3-18-3.yaml
+kubectl apply -f deployment/mutating-gatekeeper-${GATEKEEPER_VERSION}.yaml
 
 echo "Waiting for Gatekeeper to be ready..."
 kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=mutating-webhook -n gatekeeper-system --timeout=120s
@@ -39,7 +41,15 @@ kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=mutating-webho
 echo "Deployment complete! Verifying setup..."
 echo "Checking Certificate status:"
 kubectl get certificate -n gatekeeper-system gatekeeper-mutating-webhook-cert
+
 echo "Checking Secret status:"
 kubectl get secret -n gatekeeper-system gatekeeper-mutating-webhook-server-cert
+
 echo "Checking MutatingWebhookConfiguration:"
 kubectl get mutatingwebhookconfigurations gatekeeper-mutating-webhook-configuration
+
+echo "Deploying Gatekeeper..."
+kubectl apply -f deployment/validating-gatekeeper-${GATEKEEPER_VERSION}.yaml
+
+echo "Waiting for Gatekeeper to be ready..."
+kubectl wait --for=condition=ready pod -l gatekeeper.sh/operation=webhook -n gatekeeper-system --timeout=120s
