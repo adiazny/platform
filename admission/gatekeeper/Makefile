@@ -46,13 +46,13 @@ deploy-gk-3-18-3:
 .PHONY: apply-mutation-policy
 apply-mutation-policy:
 	@echo "Applying mutation policies..."
-	@$(APPLY) $(PWD)/policy/mutation/assign-allow-privilege-escalation.yaml
+	@$(APPLY) policy/mutation/assign-allow-privilege-escalation.yaml
 
 .PHONY: apply-validation-policy
 apply-validation-policy:
 	@echo "Applying validation policies..."
-	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint-template.yaml
-	@$(APPLY) $(PWD)/policy/validation/block-node-port-constraint.yaml
+	@$(APPLY) policy/validation/block-node-port-constraint-template.yaml
+	@$(APPLY) policy/validation/block-node-port-constraint.yaml
 
 .PHONY: apply-policy
 apply-policy:
@@ -63,18 +63,18 @@ apply-policy:
 .PHONY: apply-pod
 apply-pod:
 	@echo "Applying a example pod to be mutated..."
-	@$(APPLY) $(PWD)/policy/mutation/example/pod.yaml
+	@$(APPLY) policy/mutation/example/pod.yaml
 
 .PHONY: apply-allowed-service
 apply-allowed-service:
 	@echo "Applying an allowed Service creation..."
-	@$(APPLY) $(PWD)/policy/validation/examples/allow.yaml
+	@$(APPLY) policy/validation/examples/allow.yaml
 
 .PHONY: apply-disallowed-service
 apply-disallowed-service:
 	@echo "Applying a blocked Service creation..."
 	@echo "This apply is expected to fail"
-	@$(APPLY) $(PWD)/policy/validation/examples/disallow.yaml || true
+	@$(APPLY) policy/validation/examples/disallow.yaml || true
 
 apply-example-resources:
 	@$(MAKE) apply-pod
