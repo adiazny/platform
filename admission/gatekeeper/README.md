@@ -29,6 +29,12 @@ graph TD
     class GK namespace
     class V,M,A component
 ```
+### Deployment Files
+Deployment files for reference:
+* [deploy.sh](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/deploy.sh)
+* [mutating-gatekeeper-3-15-1.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/mutating-gatekeeper-3-15-1.yaml)
+* [validating-gatekeeper-3-15-1.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/validating-gatekeeper-3-15-1.yaml)
+* [cert-manager-resources.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/cert-manager-resources.yaml)
 
 ## Observations
 No defect observations for Gatkeeper 3.15:
@@ -81,6 +87,13 @@ graph TD
     class GK namespace
     class V,M,A component
 ```
+
+### Deployment Files
+Deployment files for reference:
+* [deploy.sh](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/deploy.sh)
+* [mutating-gatekeeper-3-18-3.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/mutating-gatekeeper-3-18-3.yaml)
+* [validating-gatekeeper-3-18-3.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/validating-gatekeeper-3-18-3.yaml)
+* [cert-manager-resources.yaml](https://raw.githubusercontent.com/adiazny/platform/refs/heads/main/admission/gatekeeper/deployment/cert-manager-resources.yaml)
 
 ## Observations
 Defect observations for Gatekeeper 3.18
