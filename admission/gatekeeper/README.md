@@ -4,12 +4,14 @@ This playground provides a complete environment to reproduce [Gatekeeper issue #
 
 ## What You Can Do
 
+- Recreate [Gatekeeper issue #3928](https://github.com/open-policy-agent/gatekeeper/issues/3928)
 - Launch separate playgrounds with either a 1.29.12 or 1.32.3 Kind cluster
-- Deploy Gatekeeper 3.15.1 or 3.18.3
+- Deploy Gatekeeper 3.15.1 (no defect)
+- Or deploy Gatekeeper 3.18.3 (defect)
 - Apply policy enforcement resources
 - Test policy enforcement with the sample resources
 
-## Gatekeeper Environment
+## Deploying Kind 1.29.12 and Gatekeeper 3.15.1
 
 ```mermaid
 graph TD
@@ -28,7 +30,13 @@ graph TD
     class V,M,A component
 ```
 
-## Deploying Kind 1.29.12 and Gatekeeper 3.15.1
+## Observations
+No defect observations for Gatkeeper 3.15:
+* Support running seprate operations for each webhook, one for validating and one for mutation.
+* **Does not** have an `operation=generate` for the audit webhook.
+* All mutation and valdation policies work as expected.
+
+### Running the Playground
 
 1. Open the [playground](https://labs.iximiuz.com/playgrounds/my-custom-e733aca2-1848dc81) in a separate browser tab
 2. Start playground with `kind.version` set to `1.29.12` under the Playground Parameters section above.
@@ -55,13 +63,33 @@ Ensure you are in the home directory of the playground and run the following mak
    * The gatekeeper validating webhook is configured with only `webhook` operation.
    * The gatekeeper audit webhook is configured with `audit, status, mutation-status` operations.
 
-## Observations
-Gatkeeper 3.15
-* Can run seprate operations for each webhook, one for validating and one for mutation.
-* Does not have an operation=generate for the audit webhook.
-* All mutation and valdation policies is working as expected.
-
 ## Deploying Kind 1.32.3 and Gatekeeper 3.18.3
+
+```mermaid
+graph TD
+    subgraph Kind["Kind Cluster"]
+        subgraph GK["<font size=2>Namespace: gatekeeper-system</font>"]
+            V[Validating Gatekeeper<br/>--operation=webhook]
+            M[Mutating Gatekeeper<br/>--operation=mutation-webhook,webhook]
+            A[Audit Gatekeeper<br/>--operation=audit,status,<br/>mutation-status,generate]
+        end
+    end
+    
+    classDef namespace fill:#e6e6e6,stroke:#666,stroke-width:4px
+    classDef component fill:#c2e0ff,stroke:#666
+    
+    class GK namespace
+    class V,M,A component
+```
+
+## Observations
+Defect observations for Gatekeeper 3.18
+* **Cannot** run seprate operations for each webhook, one for validating and one for mutation. 
+  * As a potential workaround: Add the `webhook` operation to the mutation gatekeeper webhook in addition to the `mutation-webhook` operation.
+* The audit gatekeeper webhook MUST add the `generate` operation.
+* All mutation and valdation policies seem to work as expected.
+
+### Running the Playground
 
 1. Open the [playground](https://labs.iximiuz.com/playgrounds/my-custom-e733aca2-1848dc81) in a separate browser tab
 2. Start the playground with `kind.version` set to `1.32.3` under the Playground Parameters section above.
@@ -95,10 +123,3 @@ Ensure you are in the home directory of the playground and run the following mak
    * The gatekeeper mutation webhook is **configured with the potential workaround** of `mutation-webhook` and `webhook` operations.
    * The gatekeeper validating webhook is configured with only `webhook` operation.
    * The gatekeeper audit webhook is configured with `audit, status, mutation-status, generate` operations.
-  
-## Observations
-Gatkeeper 3.18
-* **Cannot** run seprate operations for each webhook, one for validating and one for mutation. 
-  ** A attempted workaround:The mutation webhook requires `mutation-webhook` operation and the `webhook` operation.
-* The audit webhook MUST add the `generate` operation.
-* All mutation and valdation policies **seem** to work as expected.
