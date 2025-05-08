@@ -19,7 +19,7 @@ help: ## Display this help message
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@grep -E '^[a-zA-Z_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-30s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-30s %s\n", $$1, $$2}'
 
 .PHONY: kind
 kind: ## Create a single-node kind cluster named dolo01
