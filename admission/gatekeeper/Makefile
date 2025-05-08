@@ -1,13 +1,6 @@
-.PHONY: help
-help: ## Display this help message
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Targets:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-30s %s\n", $$1, $$2}'
+SHELL_PATH := /bin/bash
 
 .DEFAULT_GOAL := help
-
-SHELL_PATH := /bin/bash
 
 APPLY = kubectl apply --filename
 NAME = $$(echo $@ | cut -d "-" -f 2- | sed "s/%*$$//")
@@ -20,6 +13,13 @@ SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 GATEKEEPER_VERSION := 3-18-3
 
 PWD=$(shell pwd)
+
+.PHONY: help
+help: ## Display this help message
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@grep -E '^[a-zA-Z_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-30s %s\n", $$1, $$2}'
 
 .PHONY: kind
 kind: ## Create a single-node kind cluster named dolo01
