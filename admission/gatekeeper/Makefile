@@ -95,3 +95,8 @@ apply-example-resources: ## Apply all example resources (pod and services)
 cleanup: ## Clean up all Gatekeeper resources
 	@echo "Cleaning up Gatekeeper resources..."
 	@./deployment/deploy.sh cleanup $(GATEKEEPER_VERSION)
+
+.PHONY: fix-mutation-webhook
+fix-mutation-webhook: ## Fix mutation webhook operation
+	@sed -i '/- --operation=mutation-webhook/ a\        - --operation=webhook' deployment/mutating-gatekeeper-3-18-3.yaml
+	@$(MAKE) --no-print-directory deploy-gk-3-18-3
