@@ -28,11 +28,14 @@ data:
       enabled: true
     sources:
       app_logs:
-        type: stdin
-        max_length: 102400
-        host_key: host
-        decoding:
-          codec: json
+        type: http_server
+        address: 127.0.0.1:3020
+        encoding: json
+        method: POST
+        path: /logs
+        path_key: path
+        response_code: 200
+        strict_path: true
 
     transforms:
       parse_logs:
@@ -117,7 +120,10 @@ spec:
           volumeMounts:
             - name: vector-config
               mountPath: /etc/vector
-              readOnly: true
+          ports:
+            - name: vector
+              containerPort: 3020
+              protocol: TCP
         - name: opa
           image: openpolicyagent/opa:0.70.0-static
           ports:
@@ -128,12 +134,17 @@ spec:
               "--server",
               "--ignore=.*",
               "--addr=:8443",
-              "--log-level=error",
+              "--log-level=debug",
               "--log-format=json-pretty",
               "--shutdown-grace-period=25",
               "--shutdown-wait-period=10",
               "--set=caching.inter_query_builtin_cache.max_size_bytes=128000000",
-              "--set=decision_logs.console=true",
+              "--set=decision_logs.console=false",
+              "--set=services.vector.url=http://127.0.0.1:3020",
+              "--set=decision_logs.resource=/logs",
+              "--set=decision_logs.service=vector",
+              "--set=decision_logs.reporting.min_delay_seconds=2",
+              "--set=decision_logs.reporting.max_delay_seconds=5",
               "--tls-cert-file=/certs/cert.pem",
               "--tls-private-key-file=/certs/key.pem",
               "/policy/"
