@@ -31,10 +31,10 @@ graph TD
 ```
 
 ## Observations
-No defect observations for Gatkeeper 3.15:
+No defect observed for Gatkeeper 3.15:
 * Support running seprate operations for each webhook, one for validating and one for mutation.
 * **Does not** have an `operation=generate` for the audit webhook.
-* All mutation and valdation policies work as expected.
+* All mutation and validation policies work as expected.
 
 ### Running the Playground
 
@@ -83,7 +83,7 @@ graph TD
 ```
 
 ## Observations
-Defect observations for Gatekeeper 3.18
+Defect observed for Gatekeeper 3.18
 * **Cannot** run seprate operations for each webhook, one for validating and one for mutation. 
   * As a potential workaround: Add the `webhook` operation to the mutation gatekeeper webhook in addition to the `mutation-webhook` operation.
 * The audit gatekeeper webhook MUST add the `generate` operation.

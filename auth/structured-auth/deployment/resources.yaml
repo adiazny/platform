@@ -14,6 +14,53 @@ spec:
   selector:
     app: opa
 ---
+# ConfigMap containing Vector.dev configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vector-config
+  namespace: opa
+  labels:
+    app: logger
+data:
+  vector.yaml: |
+    api:
+      enabled: true
+    sources:
+      app_logs:
+        type: stdin
+        max_length: 102400
+        host_key: host
+        decoding:
+          codec: json
+
+    transforms:
+      parse_logs:
+        type: remap
+        inputs:
+          - app_logs
+        source: |
+          .timestamp = now()
+          .service = "my-app"
+          .host = get_hostname!()
+
+    sinks:
+      stdout:
+        type: console
+        inputs:
+          - parse_logs
+        encoding:
+          codec: json
+      
+      # Example: Send logs to a remote endpoint
+      # remote_logs:
+      #   type: http
+      #   inputs:
+      #     - parse_logs
+      #   uri: "https://your-log-endpoint.com/api/logs"
+      #   encoding:
+      #     codec: json
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,6 +84,12 @@ spec:
         - name: policy-volume
           configMap:
             name: opa-k8s-authz-policy
+        - name: vector-config
+          configMap:
+            name: vector-config
+            items:
+              - key: vector.yaml
+                path: vector.yaml
       initContainers:
         - name: cert-create
           image: frapsoft/openssl:latest
@@ -59,6 +112,12 @@ spec:
             - mountPath: /certs
               name: cert-volume
       containers:
+        - name: vector
+          image: timberio/vector:nightly-distroless-static
+          volumeMounts:
+            - name: vector-config
+              mountPath: /etc/vector
+              readOnly: true
         - name: opa
           image: openpolicyagent/opa:0.70.0-static
           ports:
