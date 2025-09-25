@@ -4,7 +4,7 @@ APPLY = kubectl apply --filename
 NAME = $$(echo $@ | cut -d "-" -f 2- | sed "s/%*$$//")
 WAIT := 200s
 
-KIND_NODE_VERSION := kindest/node:v1.31.2
+KIND_NODE_VERSION := kindest/node:v1.33.4
 SINGLE_NODE_KIND_CONFIG := single-node-kind-config.yaml
 
 PWD=$(shell pwd)
