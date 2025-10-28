@@ -10,7 +10,7 @@ authorizers:
     # Note:
     #   - Validation for this field is similar to how K8s labels are validated today.
     # Required, with no default
-    name: opa-webhook-1
+    name: opa-authz-webhook
     webhook:
       # The duration to cache 'authorized' responses from the webhook
       # authorizer.

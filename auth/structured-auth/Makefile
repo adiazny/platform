@@ -12,9 +12,6 @@ PWD=$(shell pwd)
 .PHONY: kind
 kind:
 	@pwd=${PWD} envsubst < $(SINGLE_NODE_KIND_CONFIG) | kind create cluster --name dolo01 --image $(KIND_NODE_VERSION) --config -
-	@kubectl create namespace opa
-	@kubectl apply -k .
-	kubectl wait -n opa --for=condition=available --timeout=120s deployment/opa
 	@kubectl create ns production
 	@kubectl -n production run nginx-workload --image=nginx
 	@echo "Cluster is ready"

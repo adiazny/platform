@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: opa-authz-webhook
+  namespace: kube-system
+  labels:
+    app: opa-authz-webhook
+spec:
+  containers:
+  - name: opa-authz-webhook
+    image: openpolicyagent/opa:1.9.0
+    args:
+    - "run"
+    - "--ignore=.*"
+    - "--server"
+    - "--addr=:30001"
+    - "--diagnostic-addr=http://0.0.0.0:30011"
+    - "--log-level=debug"
+    - "--set=decision_logs.console=true"
+    - "/policies"
+    volumeMounts:
+    - readOnly: true
+      mountPath: /policies
+      name: policy
+    ports:
+    - containerPort: 30001
+    - containerPort: 30011
+  hostNetwork: true
+  # priority: 2000001001
+  # priorityClassName: system-node-critical
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  volumes:
+  - name: policy
+    hostPath:
+      path: /etc/kubernetes/auth/authz/policy
+      type: Directory
