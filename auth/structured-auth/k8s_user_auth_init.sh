@@ -5,7 +5,7 @@ handle_error() {
   exit 1
 }
 
-mint_id_token() {
+mint_token() {
   oauth_token_url=$1
   username=$2
   password=$3
@@ -20,6 +20,7 @@ mint_id_token() {
     --data "username=${username}" \
     --data "password=${password}" \
     --data scope="${scope}" \
+    --data "audience=https://runtime.diaz" \
     --data "client_id=${client_id}" \
     --data "client_secret=${client_secret}")
 
@@ -32,12 +33,15 @@ mint_id_token() {
   fi
 
   id_token=$(echo "${response}" | jq -r .id_token)
+  access_token=$(echo "${response}" | jq -r .access_token)
 
-  if [ -z "${id_token}" ]; then
-    handle_error "Failed to extract id_token from response"
+  if [ -z "${id_token}" ] || [ -z "${access_token}" ]; then
+    handle_error "Failed to extract either id_token or access_token from response"
   fi
 
-  echo "${id_token}"
+  #echo "${id_token}"
+  
+  echo "${access_token}"
 }
 
 configure_kubectl() {
@@ -56,24 +60,6 @@ configure_kubectl() {
   fi
 }
 
-authorize_user() {
-  username=$1
-  user=${username/%@*/}
-
-  if kubectl get clusterrolebinding | grep -q "${user}"-oidc-cluster-admin; then
-    echo -e "\nDeleting previous clusterrolebinding for user ${user}"
-    kubectl delete clusterrolebinding "${user}"-oidc-cluster-admin
-  fi
-
-  group=$(kubectl --user="${username}" auth whoami -o json | jq -r '.status.userInfo.groups[] | select(startswith("system") | not)')
-
-  kubectl create clusterrolebinding "${user}"-oidc-cluster-admin --clusterrole=cluster-admin --group="${group}"
-
-  if [ $? -ne 0 ]; then
-    handle_error "Failed to authorize user "${username}" with RBAC"
-  fi
-}
-
 add_user_to_kubeconfig() {
   oauth_token_url=$1
   idp_issuer_url=$2
@@ -84,7 +70,7 @@ add_user_to_kubeconfig() {
   scope=$7
 
   id_token=$(
-    mint_id_token \
+    mint_token \
       "${oauth_token_url}" \
       "${username}" \
       "${password}" \
@@ -94,18 +80,15 @@ add_user_to_kubeconfig() {
   )
 
   echo -e "id_token: ${id_token}\n"
+  echo -e "access_token: ${id_token}\n"
 
   if [ -z "${id_token}" ]; then
     handle_error "id_token is empty. Check your Auth0 configuration."
   fi
 
-  echo -e "Adding the id_token and authentication provider configuration to kubectl's kubeconfig.\n"
+  echo -e "Adding the access_token and authentication provider configuration to kubectl's kubeconfig.\n"
 
   configure_kubectl "${username}" "${idp_issuer_url}" "${id_token}" "${client_id}"
-
-  echo -e "\nAuthorizing the demo user by binding RBAC.\n"
-
-  authorize_user "${username}"
 
   echo -e "\nValidate you have access to the cluster API by running the following commands.\n"
   echo "kubectl --user=${username} auth whoami"

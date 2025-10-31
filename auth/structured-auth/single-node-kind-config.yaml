@@ -24,8 +24,8 @@ nodes:
     containerPath: /etc/kubernetes/api-server
   - hostPath: ${pwd}/policy
     containerPath: /etc/kubernetes/auth/authz/policy
-  - hostPath: ${pwd}/static-pod
-    containerPath: /etc/kubernetes/manifests
+  - hostPath: ${pwd}/static-pod/authz-static-pod.yaml
+    containerPath: /etc/kubernetes/manifests/authz-static-pod.yaml
   kubeadmConfigPatches:
   - |
     kind: InitConfiguration

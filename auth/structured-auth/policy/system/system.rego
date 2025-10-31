@@ -14,6 +14,13 @@ main := {
 
 default allow := false
 
+allow if {
+	some group in input.spec.groups
+	group == "role:deployer"
+}
+
 default deny := false
 
 default reason := "simply observing"
+
+reason := "allowed by custom webhook" if allow

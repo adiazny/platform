@@ -13,6 +13,7 @@ PWD=$(shell pwd)
 kind:
 	@pwd=${PWD} envsubst < $(SINGLE_NODE_KIND_CONFIG) | kind create cluster --name dolo01 --image $(KIND_NODE_VERSION) --config -
 	@kubectl create ns production
+	@kubectl -n production wait --for=create serviceaccount/default --timeout=30s
 	@kubectl -n production run nginx-workload --image=nginx
 	@echo "Cluster is ready"
 

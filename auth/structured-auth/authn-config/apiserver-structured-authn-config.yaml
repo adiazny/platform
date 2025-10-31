@@ -16,6 +16,7 @@ jwt:
     # At least one of the entries must match the "aud" claim in presented JWTs.
     audiences:
     - jLe7RD4MqaW6fFgRwOXa8B0n3OVFt4Z7 # Same as --oidc-client-id.
+    - https://runtime.diaz
     # this is required to be set to "MatchAny" when multiple audiences are specified.
     audienceMatchPolicy: MatchAny
   # rules applied to validate token claims to authenticate users.
@@ -24,12 +25,9 @@ jwt:
     # expression is a CEL expression that evaluates to a boolean.
     # all the expressions must evaluate to true for validation to succeed.
   - expression: |
-      has(claims.amapiano_ticket) && claims.amapiano_ticket != "" && 
-      has(claims.amapiano_groups) && claims.amapiano_groups != ""
+      has(claims.permissions) && claims.permissions != ""
     # Message customizes the error message seen in the API server logs when the validation fails.
-    message: the amapiano_ticket and amapiano_groups claim must exist and not be empty
-  - expression: 'has(claims.amapiano_nbf) && claims.amapiano_nbf != "" && claims.exp - claims.amapiano_nbf <= 21600'
-    message: total token lifetime must not exceed 6 hours
+    message: the permissions claim must exist and not be empty
   claimMappings:
     # username represents an option for the username attribute.
     # This is the only required attribute.
@@ -48,7 +46,7 @@ jwt:
       # if groups.claim is set, groups.prefix is required.
       # Explicitly set it to "" if no prefix is desired.
       # prefix: ""
-      expression: claims['amapiano_groups']
+      expression: claims['permissions']
     # uid represents an option for the uid attribute.
     uid:
       # Mutually exclusive with uid.expression.

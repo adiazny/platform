@@ -80,8 +80,8 @@ authorizers:
       # only send resource requests to the webhook
       - expression: "(has(request.resourceAttributes))"
       # only intercept requests to production
-      - expression: "(request.resourceAttributes.namespace == 'production')"
+      #- expression: "(request.resourceAttributes.namespace == 'production')"
       # don't intercept requests from kube-system service accounts
-      - expression: "!('system:serviceaccounts:kube-system' in request.groups)"
+      # - expression: "!('system:serviceaccounts:kube-system' in request.groups)"
   - type: RBAC
     name: rbac
